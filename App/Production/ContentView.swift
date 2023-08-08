@@ -5,8 +5,9 @@ import GitHubSchema
 struct ContentView: View {
     @AppStorage("token") var token = ""
     @State var client = GraphQLClient.shared
-    @State var repository: GetRepositoryQuery.Data.Repository?
     @State var tokenInput: String = UserDefaults.standard.string(forKey: "token") ?? ""
+    @State var repositories: [SearchRepositoriesQuery.Data.Search.Edge.Node.AsRepository] = []
+    @State var searchWord: String = ""
     
     var body: some View {
         VStack {
@@ -18,15 +19,35 @@ struct ContentView: View {
                     Text("set!!")
                 }
             } else {
-                Button {
-                    Task {
-                        let repositoryData = try? await client.getRepository(owner: "apple", name: "swift")
-                        repository = repositoryData?.repository
+                HStack {
+                    TextField("検索ワード", text: $searchWord)
+                    Button {
+                        Task {
+                            let data = try? await client.searchRepository(word: searchWord)
+                            guard let edgeds = data?.search.edges else { return }
+                            repositories = edgeds.compactMap { $0?.node?.asRepository }
+                        }
+                    } label: {
+                        Text("Search!!")
                     }
-                } label: {
-                    Text("fetch!!")
                 }
-                Text("\(repository?.name ?? "")")
+                List {
+                    ForEach(repositories, id: \.self.id) { repository in
+                        VStack {
+                            Text(repository.owner.asUser?.name ?? repository.owner.asOrganization?.name ?? "")
+                            Text("\(repository.name)")
+                        }
+                        .frame(maxWidth: .infinity)
+                        .foregroundColor(.white)
+                        .padding()
+                        .background {
+                            Color.cyan
+                                .cornerRadius(10)
+                        }
+                    }
+                    .listRowSeparator(.hidden)
+                }
+                .listStyle(.plain)
                 
                 Button {
                     token = ""

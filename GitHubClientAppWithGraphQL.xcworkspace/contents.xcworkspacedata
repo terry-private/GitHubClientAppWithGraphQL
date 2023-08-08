@@ -8,6 +8,9 @@
       location = "group:ApolloSchema/GitHubSchema">
    </FileRef>
    <FileRef
+      location = "group:/Users/cw-teruhito.wakae/project/GitHubClientAppWithGraphQL/ApolloSchema/graphql/GraphQL">
+   </FileRef>
+   <FileRef
       location = "group:App/Production.xcodeproj">
    </FileRef>
 </Workspace>

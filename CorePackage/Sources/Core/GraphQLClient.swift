@@ -32,8 +32,24 @@ public struct GraphQLClient {
     
     public func getRepository(owner: String, name: String) async throws -> GetRepositoryQuery.Data? {
         let query = GetRepositoryQuery(owner: owner, name: name)
+        return try await apollo.fetch(query: query)
+    }
+    
+    public func searchRepository(word: String, afterCursol: String? = nil) async throws -> SearchRepositoriesQuery.Data? {
+        let query = SearchRepositoriesQuery(query: .init(stringLiteral: word), after: .init(afterCursol))
+        return try await apollo.fetch(query: query)
+    }
+}
+
+private extension ApolloClient {
+    func fetch<Query: GraphQLQuery>(
+        query: Query,
+        cachePolicy: CachePolicy = .default,
+        contextIdentifier: UUID? = nil,
+        queue: DispatchQueue = .main
+    ) async throws -> Query.Data? {
         return try await withCheckedThrowingContinuation { continuation in
-            apollo.fetch(query: query) { result in
+            fetch(query: query, cachePolicy: cachePolicy, contextIdentifier: contextIdentifier, queue: queue) {  result in
                 switch result {
                 case .success(let graphQLResult):
                     continuation.resume(returning: graphQLResult.data)
@@ -43,5 +59,15 @@ public struct GraphQLClient {
                 }
             }
         }
+    }
+}
+
+private extension GraphQLNullable where Wrapped == String {
+    init(_ wrapped: String?) {
+        guard let wrapped else {
+            self.init(nilLiteral: ())
+            return
+        }
+        self.init(stringLiteral: wrapped)
     }
 }
