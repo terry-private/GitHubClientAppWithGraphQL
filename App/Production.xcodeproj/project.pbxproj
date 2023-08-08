@@ -11,6 +11,8 @@
 		501C6CA62A62370300D88C54 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501C6CA52A62370300D88C54 /* ContentView.swift */; };
 		501C6CA82A62370600D88C54 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 501C6CA72A62370600D88C54 /* Assets.xcassets */; };
 		501C6CAC2A62370600D88C54 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 501C6CAB2A62370600D88C54 /* Preview Assets.xcassets */; };
+		50F157EC2A77ACE400FF6DFC /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 50F157EB2A77ACE400FF6DFC /* Core */; };
+		50F157EE2A77ACE900FF6DFC /* GitHubSchema in Frameworks */ = {isa = PBXBuildFile; productRef = 50F157ED2A77ACE900FF6DFC /* GitHubSchema */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +48,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				50F157EE2A77ACE900FF6DFC /* GitHubSchema in Frameworks */,
+				50F157EC2A77ACE400FF6DFC /* Core in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +75,7 @@
 			children = (
 				501C6CA22A62370300D88C54 /* Production */,
 				501C6CA12A62370300D88C54 /* Products */,
+				50F157EA2A77ACE400FF6DFC /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -104,6 +109,13 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		50F157EA2A77ACE400FF6DFC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -120,6 +132,10 @@
 			dependencies = (
 			);
 			name = Production;
+			packageProductDependencies = (
+				50F157EB2A77ACE400FF6DFC /* Core */,
+				50F157ED2A77ACE900FF6DFC /* GitHubSchema */,
+			);
 			productName = GitHubClientAppWithGraphQL;
 			productReference = 501C6CA02A62370300D88C54 /* Production.app */;
 			productType = "com.apple.product-type.application";
@@ -586,6 +602,17 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		50F157EB2A77ACE400FF6DFC /* Core */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Core;
+		};
+		50F157ED2A77ACE900FF6DFC /* GitHubSchema */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = GitHubSchema;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 501C6C982A62370300D88C54 /* Project object */;
 }
