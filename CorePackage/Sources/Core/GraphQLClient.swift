@@ -35,7 +35,7 @@ public struct GraphQLClient {
         return try await apollo.fetch(query: query)
     }
     
-    public func searchRepository(word: String, afterCursol: String? = nil) async throws -> SearchRepositoriesQuery.Data? {
+    public func searchRepositories(word: String, afterCursol: String? = nil) async throws -> SearchRepositoriesQuery.Data? {
         let query = SearchRepositoriesQuery(query: .init(stringLiteral: word), after: .init(afterCursol))
         return try await apollo.fetch(query: query)
     }

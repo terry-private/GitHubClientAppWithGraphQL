@@ -23,7 +23,7 @@ struct ContentView: View {
                     TextField("検索ワード", text: $searchWord)
                     Button {
                         Task {
-                            let data = try? await client.searchRepository(word: searchWord)
+                            let data = try? await client.searchRepositories(word: searchWord)
                             guard let edgeds = data?.search.edges else { return }
                             repositories = edgeds.compactMap { $0?.node?.asRepository }
                         }
