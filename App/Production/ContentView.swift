@@ -1,6 +1,7 @@
 import SwiftUI
 import Core
 import GitHubSchema
+import Apollo
 
 struct ContentView: View {
     @AppStorage("token") var token = ""
@@ -10,7 +11,9 @@ struct ContentView: View {
     
     @State var inputToken: String = UserDefaults.standard.string(forKey: "token") ?? ""
     @State var repositories: [SearchRepositoriesQuery.Data.Search.Edge.Node.AsRepository] = []
-    @State var searchWord: String = ""
+    @State var searchWord: String = "swift"
+    
+    @State var selectedCachePolicy: CachePolicy = .default
     
     init() {
         guard token != "" else { return }
@@ -33,12 +36,20 @@ struct ContentView: View {
                 TextField("検索ワード", text: $searchWord)
                     .padding()
                     .background(Color.gray.cornerRadius(10).opacity(0.2))
+                
+                Picker("cachePolicy", selection: $selectedCachePolicy) {
+                    ForEach(CachePolicy.allCases, id: \.self.title) { cachePolicy in
+                        Text(cachePolicy.title).tag(cachePolicy)
+                    }
+                }
+                Text(selectedCachePolicy.description)
+                
                 HStack {
                     VStack {
                         Text("メモリキャッシュ")
                         Button {
                             Task {
-                                let data = try? await inMemoryClient?.searchRepositories(word: searchWord)
+                                let data = try? await inMemoryClient?.searchRepositories(word: searchWord, cachePolicy: selectedCachePolicy)
                                 let edgeds = data?.search.edges
                                 repositories = edgeds?.compactMap { $0?.node?.asRepository } ?? []
                             }
@@ -54,6 +65,11 @@ struct ContentView: View {
                         } label: {
                             Text("read cache")
                         }
+                        Button {
+                            inMemoryClient?.clearCache()
+                        } label: {
+                            Text("clear cache")
+                        }
                     }
                     .padding()
                     
@@ -61,7 +77,7 @@ struct ContentView: View {
                         Text("SQLiteキャッシュ")
                         Button {
                             Task {
-                                let data = try? await sqliteClient?.searchRepositories(word: searchWord)
+                                let data = try? await sqliteClient?.searchRepositories(word: searchWord, cachePolicy: selectedCachePolicy)
                                 let edgeds = data?.search.edges
                                 repositories = edgeds?.compactMap { $0?.node?.asRepository } ?? []
                             }
@@ -77,9 +93,21 @@ struct ContentView: View {
                         } label: {
                             Text("read cache")
                         }
+                        Button {
+                            sqliteClient?.clearCache()
+                        } label: {
+                            Text("clear cache")
+                        }
                     }
                     .padding()
                 }
+                
+                Button {
+                    repositories.removeAll()
+                } label: {
+                    Text("clear list")
+                }
+                
                 List {
                     ForEach(repositories, id: \.self.id) { repository in
                         VStack {
@@ -101,11 +129,48 @@ struct ContentView: View {
                 Button {
                     token = ""
                 } label: {
-                    Text("reset token!!")
+                    Text("reset token")
                 }
             }
         }
         .padding()
+    }
+}
+
+extension CachePolicy: CaseIterable {
+    public static var allCases: [Self] {
+        [
+           .returnCacheDataElseFetch,
+           .fetchIgnoringCacheData,
+           .fetchIgnoringCacheCompletely,
+           .returnCacheDataDontFetch,
+           .returnCacheDataAndFetch
+       ]
+    }
+    
+    var title: String {
+        switch self {
+        case .returnCacheDataElseFetch: return "returnCacheDataElseFetch"
+        case .fetchIgnoringCacheData: return "fetchIgnoringCacheData"
+        case .fetchIgnoringCacheCompletely: return "fetchIgnoringCacheCompletely"
+        case .returnCacheDataDontFetch: return "returnCacheDataDontFetch"
+        case .returnCacheDataAndFetch: return "returnCacheDataAndFetch"
+        }
+    }
+    
+    var description: String {
+        switch self {
+        case .returnCacheDataElseFetch:
+            return "利用可能であればキャッシュからデータを返し、そうでなければサーバーから結果をフェッチする。(Default)"
+        case .fetchIgnoringCacheData:
+            return "常にサーバから結果をフェッチする。"
+        case .fetchIgnoringCacheCompletely:
+            return "結果を常にサーバからフェッチし、キャッシュに保存しない。"
+        case .returnCacheDataDontFetch:
+            return "利用可能であればキャッシュからデータを返し、そうでなければエラーを返す。"
+        case .returnCacheDataAndFetch:
+            return "利用可能であればキャッシュからデータを返し、常にサーバから結果をフェッチする。"
+        }
     }
 }
 
