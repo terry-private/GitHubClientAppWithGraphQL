@@ -31,6 +31,7 @@ struct ContentView: View {
                     sqliteClient = .sqliteCacheClient(token: token)
                 } label: {
                     Text("set!!")
+                        .padding(4)
                 }
             } else {
                 TextField("検索ワード", text: $searchWord)
@@ -55,6 +56,7 @@ struct ContentView: View {
                             }
                         } label: {
                             Text("fetch")
+                                .padding(4)
                         }
                         Button {
                             Task {
@@ -64,11 +66,13 @@ struct ContentView: View {
                             }
                         } label: {
                             Text("read cache")
+                                .padding(4)
                         }
                         Button {
                             inMemoryClient?.clearCache()
                         } label: {
                             Text("clear cache")
+                                .padding(4)
                         }
                     }
                     .padding()
@@ -83,6 +87,7 @@ struct ContentView: View {
                             }
                         } label: {
                             Text("fetch")
+                                .padding(4)
                         }
                         Button {
                             Task {
@@ -92,11 +97,13 @@ struct ContentView: View {
                             }
                         } label: {
                             Text("read cache")
+                                .padding(4)
                         }
                         Button {
                             sqliteClient?.clearCache()
                         } label: {
                             Text("clear cache")
+                                .padding(4)
                         }
                     }
                     .padding()
@@ -126,7 +133,7 @@ struct ContentView: View {
                 }
                 .listStyle(.plain)
                 
-                Button {
+                Button {
                     token = ""
                 } label: {
                     Text("reset token")
