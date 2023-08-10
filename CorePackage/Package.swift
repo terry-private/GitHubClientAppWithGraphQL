@@ -5,6 +5,7 @@ import PackageDescription
 
 private extension PackageDescription.Target.Dependency {
     static let apollo: Self = .product(name: "Apollo", package: "apollo-ios")
+    static let apolloSQLite: Self = .product(name: "ApolloSQLite", package: "apollo-ios")
     static let gitHubSchema: Self = .product(name: "GitHubSchema", package: "GitHubSchema")
 }
 
@@ -31,6 +32,7 @@ let package = Package(
             name: "Core",
             dependencies: [
                 .apollo,
+                .apolloSQLite,
                 .gitHubSchema
             ]),
         .testTarget(

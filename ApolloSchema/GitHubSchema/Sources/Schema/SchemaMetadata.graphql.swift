@@ -23,10 +23,11 @@ public enum SchemaMetadata: ApolloAPI.SchemaMetadata {
   public static func objectType(forTypename typename: String) -> Object? {
     switch typename {
     case "Query": return GitHubSchema.Objects.Query
-    case "User": return GitHubSchema.Objects.User
+    case "SearchResultItemConnection": return GitHubSchema.Objects.SearchResultItemConnection
+    case "SearchResultItemEdge": return GitHubSchema.Objects.SearchResultItemEdge
+    case "App": return GitHubSchema.Objects.App
     case "AddedToMergeQueueEvent": return GitHubSchema.Objects.AddedToMergeQueueEvent
     case "AddedToProjectEvent": return GitHubSchema.Objects.AddedToProjectEvent
-    case "App": return GitHubSchema.Objects.App
     case "AssignedEvent": return GitHubSchema.Objects.AssignedEvent
     case "AutomaticBaseChangeFailedEvent": return GitHubSchema.Objects.AutomaticBaseChangeFailedEvent
     case "AutomaticBaseChangeSucceededEvent": return GitHubSchema.Objects.AutomaticBaseChangeSucceededEvent
@@ -60,6 +61,7 @@ public enum SchemaMetadata: ApolloAPI.SchemaMetadata {
     case "Mannequin": return GitHubSchema.Objects.Mannequin
     case "Organization": return GitHubSchema.Objects.Organization
     case "Repository": return GitHubSchema.Objects.Repository
+    case "User": return GitHubSchema.Objects.User
     case "Gist": return GitHubSchema.Objects.Gist
     case "Topic": return GitHubSchema.Objects.Topic
     case "Team": return GitHubSchema.Objects.Team
@@ -264,9 +266,6 @@ public enum SchemaMetadata: ApolloAPI.SchemaMetadata {
     case "UserContentEdit": return GitHubSchema.Objects.UserContentEdit
     case "UserStatus": return GitHubSchema.Objects.UserStatus
     case "VerifiableDomain": return GitHubSchema.Objects.VerifiableDomain
-    case "RepositoryConnection": return GitHubSchema.Objects.RepositoryConnection
-    case "SearchResultItemConnection": return GitHubSchema.Objects.SearchResultItemConnection
-    case "SearchResultItemEdge": return GitHubSchema.Objects.SearchResultItemEdge
     default: return nil
     }
   }

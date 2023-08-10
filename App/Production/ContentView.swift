@@ -4,32 +4,81 @@ import GitHubSchema
 
 struct ContentView: View {
     @AppStorage("token") var token = ""
-    @State var client = GraphQLClient.shared
-    @State var tokenInput: String = UserDefaults.standard.string(forKey: "token") ?? ""
+    
+    @State var inMemoryClient: GraphQLClient?
+    @State var sqliteClient: GraphQLClient?
+    
+    @State var inputToken: String = UserDefaults.standard.string(forKey: "token") ?? ""
     @State var repositories: [SearchRepositoriesQuery.Data.Search.Edge.Node.AsRepository] = []
     @State var searchWord: String = ""
+    
+    init() {
+        guard token != "" else { return }
+        _inMemoryClient = .init(wrappedValue: .inMemoryCacheClient(token: token))
+        _sqliteClient = .init(wrappedValue: .sqliteCacheClient(token: token))
+    }
     
     var body: some View {
         VStack {
             if token == "" {
-                SecureField("GitHub tokenを入力", text: $tokenInput)
+                SecureField("GitHub tokenを入力", text: $inputToken)
                 Button {
-                    client.setToken(token: tokenInput)
+                    token = inputToken
+                    inMemoryClient = .inMemoryCacheClient(token: token)
+                    sqliteClient = .sqliteCacheClient(token: token)
                 } label: {
                     Text("set!!")
                 }
             } else {
+                TextField("検索ワード", text: $searchWord)
+                    .padding()
+                    .background(Color.gray.cornerRadius(10).opacity(0.2))
                 HStack {
-                    TextField("検索ワード", text: $searchWord)
-                    Button {
-                        Task {
-                            let data = try? await client.searchRepositories(word: searchWord)
-                            guard let edgeds = data?.search.edges else { return }
-                            repositories = edgeds.compactMap { $0?.node?.asRepository }
+                    VStack {
+                        Text("メモリキャッシュ")
+                        Button {
+                            Task {
+                                let data = try? await inMemoryClient?.searchRepositories(word: searchWord)
+                                let edgeds = data?.search.edges
+                                repositories = edgeds?.compactMap { $0?.node?.asRepository } ?? []
+                            }
+                        } label: {
+                            Text("fetch")
                         }
-                    } label: {
-                        Text("Search!!")
+                        Button {
+                            Task {
+                                let data = try? await inMemoryClient?.searchRepositoriesFromCache(word: searchWord)
+                                let edgeds = data?.search.edges
+                                repositories = edgeds?.compactMap { $0?.node?.asRepository } ?? []
+                            }
+                        } label: {
+                            Text("read cache")
+                        }
                     }
+                    .padding()
+                    
+                    VStack {
+                        Text("SQLiteキャッシュ")
+                        Button {
+                            Task {
+                                let data = try? await sqliteClient?.searchRepositories(word: searchWord)
+                                let edgeds = data?.search.edges
+                                repositories = edgeds?.compactMap { $0?.node?.asRepository } ?? []
+                            }
+                        } label: {
+                            Text("fetch")
+                        }
+                        Button {
+                            Task {
+                                let data = try? await sqliteClient?.searchRepositoriesFromCache(word: searchWord)
+                                let edgeds = data?.search.edges
+                                repositories = edgeds?.compactMap { $0?.node?.asRepository } ?? []
+                            }
+                        } label: {
+                            Text("read cache")
+                        }
+                    }
+                    .padding()
                 }
                 List {
                     ForEach(repositories, id: \.self.id) { repository in
@@ -52,10 +101,9 @@ struct ContentView: View {
                 Button {
                     token = ""
                 } label: {
-                    Text("rest token!!")
+                    Text("reset token!!")
                 }
             }
-            
         }
         .padding()
     }
