@@ -133,7 +133,7 @@ struct ContentView: View {
                 }
                 .listStyle(.plain)
                 
-                Button {
+                Button {
                     token = ""
                 } label: {
                     Text("reset token")
