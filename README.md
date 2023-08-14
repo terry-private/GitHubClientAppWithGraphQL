@@ -1,15 +1,14 @@
 # GitHubClientAppWithGraphQL
-### 注意事項
-プライベートトークンが必要なので事前に作成してください。
-
 ### 概要
 - GitHub API v4を利用したリポジトリを検索できるアプリ
 - GraphQL + apollo-iosのサンプル
 
 ### 目的
-
 - apollo-iosでキャッシュを制御するサンプルコードをシェア
 - キャッシュポリシーによる挙動の違いを動作確認
+
+### 準備
+GitHubAccountのtokenが必要なので[こちら](https://github.com/settings/tokens)から作成してください。
 
 <BR>
 
