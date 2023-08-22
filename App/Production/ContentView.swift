@@ -1,6 +1,5 @@
 import SwiftUI
 import Core
-import GitHubSchema
 import Apollo
 
 struct ContentView: View {
@@ -8,11 +7,9 @@ struct ContentView: View {
     
     @State var inMemoryClient: GraphQLClient?
     @State var sqliteClient: GraphQLClient?
-    
     @State var inputToken: String = UserDefaults.standard.string(forKey: "token") ?? ""
-    @State var repositories: [SearchRepositoriesQuery.Data.Search.Edge.Node.AsRepository] = []
+    @State var repositories: [Repository] = []
     @State var searchWord: String = "swift"
-    
     @State var selectedCachePolicy: CachePolicy = .default
     
     init() {
@@ -50,9 +47,12 @@ struct ContentView: View {
                         Text("メモリキャッシュ")
                         Button {
                             Task {
-                                let data = try? await inMemoryClient?.searchRepositories(word: searchWord, cachePolicy: selectedCachePolicy)
-                                let edgeds = data?.search.edges
-                                repositories = edgeds?.compactMap { $0?.node?.asRepository } ?? []
+                                guard let inMemoryClient else { return }
+                                do {
+                                    repositories = try await inMemoryClient.searchRepositories(word: searchWord, cachePolicy: selectedCachePolicy)
+                                } catch {
+                                    print(error.localizedDescription)
+                                }
                             }
                         } label: {
                             Text("fetch")
@@ -60,9 +60,12 @@ struct ContentView: View {
                         }
                         Button {
                             Task {
-                                let data = try? await inMemoryClient?.searchRepositoriesFromCache(word: searchWord)
-                                let edgeds = data?.search.edges
-                                repositories = edgeds?.compactMap { $0?.node?.asRepository } ?? []
+                                guard let inMemoryClient else { return }
+                                do {
+                                    repositories = try await inMemoryClient.searchRepositoriesFromCache(word: searchWord)
+                                } catch {
+                                    print(error.localizedDescription)
+                                }
                             }
                         } label: {
                             Text("read cache")
@@ -81,9 +84,12 @@ struct ContentView: View {
                         Text("SQLiteキャッシュ")
                         Button {
                             Task {
-                                let data = try? await sqliteClient?.searchRepositories(word: searchWord, cachePolicy: selectedCachePolicy)
-                                let edgeds = data?.search.edges
-                                repositories = edgeds?.compactMap { $0?.node?.asRepository } ?? []
+                                guard let sqliteClient else { return }
+                                do {
+                                    repositories = try await sqliteClient.searchRepositories(word: searchWord, cachePolicy: selectedCachePolicy)
+                                } catch {
+                                    print(error.localizedDescription)
+                                }
                             }
                         } label: {
                             Text("fetch")
@@ -91,9 +97,12 @@ struct ContentView: View {
                         }
                         Button {
                             Task {
-                                let data = try? await sqliteClient?.searchRepositoriesFromCache(word: searchWord)
-                                let edgeds = data?.search.edges
-                                repositories = edgeds?.compactMap { $0?.node?.asRepository } ?? []
+                                guard let sqliteClient else { return }
+                                do {
+                                    repositories = try await sqliteClient.searchRepositoriesFromCache(word: searchWord)
+                                } catch {
+                                    print(error.localizedDescription)
+                                }
                             }
                         } label: {
                             Text("read cache")
@@ -118,7 +127,7 @@ struct ContentView: View {
                 List {
                     ForEach(repositories, id: \.self.id) { repository in
                         VStack {
-                            Text(repository.owner.asUser?.name ?? repository.owner.asOrganization?.name ?? "")
+                            Text(repository.owner.name ?? "")
                             Text("\(repository.name)")
                         }
                         .frame(maxWidth: .infinity)
