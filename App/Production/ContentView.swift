@@ -1,6 +1,5 @@
 import SwiftUI
 import Core
-import GitHubSchema
 import Apollo
 
 struct ContentView: View {
@@ -8,13 +7,9 @@ struct ContentView: View {
     
     @State var inMemoryClient: GraphQLClient?
     @State var sqliteClient: GraphQLClient?
-    
     @State var inputToken: String = UserDefaults.standard.string(forKey: "token") ?? ""
-    
     @State var repositories: [Repository] = []
-    
     @State var searchWord: String = "swift"
-    
     @State var selectedCachePolicy: CachePolicy = .default
     
     init() {

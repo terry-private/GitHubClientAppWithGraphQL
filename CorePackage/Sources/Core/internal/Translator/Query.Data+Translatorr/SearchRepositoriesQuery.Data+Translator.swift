@@ -35,7 +35,6 @@ extension SearchRepositoriesQuery.Data.Search.Edge.Node.AsRepository: Translator
 }
 
 extension SearchRepositoriesQuery.Data.Search.Edge.Node.AsRepository.Owner: Translator {
-    typealias Model = Owner
     func toModel() throws -> Owner {
         if let organization = asOrganization {
             return Owner(
