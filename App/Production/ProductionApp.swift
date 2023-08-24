@@ -4,7 +4,7 @@ import SwiftUI
 struct ProductionApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SearchView()
         }
     }
 }

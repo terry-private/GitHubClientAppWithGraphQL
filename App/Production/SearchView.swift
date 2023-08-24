@@ -2,77 +2,50 @@ import SwiftUI
 import Core
 import Apollo
 
-struct ContentView: View {
-    @AppStorage("token") var token = ""
+struct SearchView: View {    
+    @StateObject var viewState: SearchViewState = .init()
     
-    @State var inMemoryClient: GraphQLClient?
-    @State var sqliteClient: GraphQLClient?
-    @State var inputToken: String = UserDefaults.standard.string(forKey: "token") ?? ""
-    @State var repositories: [Repository] = []
-    @State var searchWord: String = "swift"
-    @State var selectedCachePolicy: CachePolicy = .default
-    
-    init() {
-        guard token != "" else { return }
-        _inMemoryClient = .init(wrappedValue: .inMemoryCacheClient(token: token))
-        _sqliteClient = .init(wrappedValue: .sqliteCacheClient(token: token))
-    }
+    init() {}
     
     var body: some View {
         VStack {
-            if token == "" {
-                SecureField("GitHub tokenを入力", text: $inputToken)
+            if viewState.isShowInputTokenView {
+                SecureField("GitHub tokenを入力", text: $viewState.inputToken)
                 Button {
-                    token = inputToken
-                    inMemoryClient = .inMemoryCacheClient(token: token)
-                    sqliteClient = .sqliteCacheClient(token: token)
+                    viewState.tokenSetButtonTapped()
                 } label: {
                     Text("set!!")
                         .padding(4)
                 }
             } else {
-                TextField("検索ワード", text: $searchWord)
+                TextField("検索ワード", text: $viewState.searchWord)
                     .padding()
                     .background(Color.gray.cornerRadius(10).opacity(0.2))
                 
-                Picker("cachePolicy", selection: $selectedCachePolicy) {
+                Picker("cachePolicy", selection: $viewState.selectedCachePolicy) {
                     ForEach(CachePolicy.allCases, id: \.self.title) { cachePolicy in
                         Text(cachePolicy.title).tag(cachePolicy)
                     }
                 }
-                Text(selectedCachePolicy.description)
+                Text(viewState.selectedCachePolicy.description)
                 
                 HStack {
                     VStack {
                         Text("メモリキャッシュ")
                         Button {
-                            Task {
-                                guard let inMemoryClient else { return }
-                                do {
-                                    repositories = try await inMemoryClient.searchRepositories(word: searchWord, cachePolicy: selectedCachePolicy)
-                                } catch {
-                                    print(error.localizedDescription)
-                                }
-                            }
+                            viewState.inMemoryClientFetchButtonTapped()
                         } label: {
                             Text("fetch")
                                 .padding(4)
                         }
                         Button {
-                            Task {
-                                guard let inMemoryClient else { return }
-                                do {
-                                    repositories = try await inMemoryClient.searchRepositoriesFromCache(word: searchWord)
-                                } catch {
-                                    print(error.localizedDescription)
-                                }
-                            }
+                            viewState.inMemoryClientReadCacheButtonTapped()
                         } label: {
                             Text("read cache")
                                 .padding(4)
                         }
                         Button {
-                            inMemoryClient?.clearCache()
+                            viewState.inMemoryClientClearCacheButtonTapped()
                         } label: {
                             Text("clear cache")
                                 .padding(4)
@@ -82,34 +55,23 @@ struct ContentView: View {
                     
                     VStack {
                         Text("SQLiteキャッシュ")
+                        
                         Button {
-                            Task {
-                                guard let sqliteClient else { return }
-                                do {
-                                    repositories = try await sqliteClient.searchRepositories(word: searchWord, cachePolicy: selectedCachePolicy)
-                                } catch {
-                                    print(error.localizedDescription)
-                                }
-                            }
+                            viewState.sqliteClientFetchButtonTapped()
                         } label: {
                             Text("fetch")
                                 .padding(4)
                         }
+                        
                         Button {
-                            Task {
-                                guard let sqliteClient else { return }
-                                do {
-                                    repositories = try await sqliteClient.searchRepositoriesFromCache(word: searchWord)
-                                } catch {
-                                    print(error.localizedDescription)
-                                }
-                            }
+                            viewState.sqliteClientReadCacheButtonTapped()
                         } label: {
                             Text("read cache")
                                 .padding(4)
                         }
+                        
                         Button {
-                            sqliteClient?.clearCache()
+                            viewState.sqliteClientClearCacheButtonTapped()
                         } label: {
                             Text("clear cache")
                                 .padding(4)
@@ -119,13 +81,13 @@ struct ContentView: View {
                 }
                 
                 Button {
-                    repositories.removeAll()
+                    viewState.clearListButtonTapped()
                 } label: {
                     Text("clear list")
                 }
                 
                 List {
-                    ForEach(repositories, id: \.self.id) { repository in
+                    ForEach(viewState.repositories, id: \.self.id) { repository in
                         VStack {
                             Text(repository.owner.name ?? "")
                             Text("\(repository.name)")
@@ -143,7 +105,7 @@ struct ContentView: View {
                 .listStyle(.plain)
                 
                 Button {
-                    token = ""
+                    viewState.resetTokenButtonTapped()
                 } label: {
                     Text("reset token")
                 }
@@ -190,8 +152,8 @@ extension CachePolicy: CaseIterable {
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
+struct SearchView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        SearchView()
     }
 }
