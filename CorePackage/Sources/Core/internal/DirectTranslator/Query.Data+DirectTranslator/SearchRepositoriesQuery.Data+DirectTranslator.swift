@@ -6,19 +6,12 @@ extension SearchRepositoriesQuery.Data: DirectTranslatorProtocol {
         guard let edges = self.search.edges else {
             throw TranslateError.null
         }
-        var repositories: [Repository] = []
-        for edge in edges {
-            do {
-                guard let repository = try edge?.node?.asRepository?.toModel()  else {
-                    throw TranslateError.unexpected
-                }
-                repositories.append(repository)
-            } catch {
-                print(error.localizedDescription)
-                throw error
+        return try edges.map {
+            guard let repository = try $0?.node?.asRepository?.toModel()  else {
+                throw TranslateError.null
             }
+            return repository
         }
-        return repositories
     }
 }
 
