@@ -9,11 +9,11 @@ protocol EnumTranslatorProtocol {
 enum EnumTranslator: EnumTranslatorProtocol {
     static func repositories(from queryData: SearchRepositoriesQuery.Data) throws -> [Repository] {
         guard let edges = queryData.search.edges else {
-            throw TranslateError.null
+            throw GraphQLError.translationFailed
         }
         return try edges.map {
             guard let repository = try $0?.node?.asRepository?.toModel()  else {
-                throw TranslateError.null
+                throw GraphQLError.translationFailed
             }
             return repository
         }
@@ -46,6 +46,6 @@ private extension EnumTranslator {
                 name: user.name
             )
         }
-        throw TranslateError.null
+        throw GraphQLError.translationFailed
     }
 }

@@ -14,7 +14,7 @@ extension ApolloClient {
                 switch result {
                 case .success(let graphQLResult):
                     guard let data = graphQLResult.data else {
-                        continuation.resume(throwing: TranslateError.null)
+                        continuation.resume(throwing: GraphQLError.translationFailed)
                         return
                     }
                     do {

@@ -4,11 +4,11 @@ import GitHubSchema
 extension SearchRepositoriesQuery.Data: DirectTranslatorProtocol {
     func toModel() throws -> [Repository] {
         guard let edges = self.search.edges else {
-            throw TranslateError.null
+            throw GraphQLError.translationFailed
         }
         return try edges.map {
             guard let repository = try $0?.node?.asRepository?.toModel()  else {
-                throw TranslateError.null
+                throw GraphQLError.translationFailed
             }
             return repository
         }
@@ -43,6 +43,6 @@ extension SearchRepositoriesQuery.Data.Search.Edge.Node.AsRepository.Owner: Dire
                 name: user.name
             )
         }
-        throw TranslateError.null
+        throw GraphQLError.translationFailed
     }
 }
