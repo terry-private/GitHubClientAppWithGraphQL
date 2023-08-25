@@ -5,7 +5,7 @@ import ApolloAPI
 extension ApolloStore {
     func withinReadTransaction<Query>(
       _ query: Query
-    ) async throws -> Query.Data.Model where Query: GraphQLQuery, Query.Data: Translator {
+    ) async throws -> Query.Data.Model where Query: GraphQLQuery, Query.Data: DirectTranslatorProtocol {
         return try await withCheckedThrowingContinuation { continuation in
             withinReadTransaction({ transaction in
                 do {

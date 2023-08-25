@@ -8,7 +8,7 @@ extension ApolloClient {
         cachePolicy: CachePolicy = .default,
         contextIdentifier: UUID? = nil,
         queue: DispatchQueue = .main
-    ) async throws -> Query.Data.Model where Query.Data: Translator {
+    ) async throws -> Query.Data.Model where Query.Data: DirectTranslatorProtocol {
         return try await withCheckedThrowingContinuation { continuation in
             fetch(query: query, cachePolicy: cachePolicy, contextIdentifier: contextIdentifier, queue: queue) {  result in
                 switch result {

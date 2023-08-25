@@ -1,7 +1,7 @@
 import Foundation
 import GitHubSchema
 
-extension SearchRepositoriesQuery.Data: Translator {
+extension SearchRepositoriesQuery.Data: DirectTranslatorProtocol {
     func toModel() throws -> [Repository] {
         guard let edges = self.search.edges else {
             throw TranslateError.null
@@ -22,7 +22,7 @@ extension SearchRepositoriesQuery.Data: Translator {
     }
 }
 
-extension SearchRepositoriesQuery.Data.Search.Edge.Node.AsRepository: Translator {
+extension SearchRepositoriesQuery.Data.Search.Edge.Node.AsRepository: DirectTranslatorProtocol {
     func toModel() throws -> Repository {
         let owner = try owner.toModel()
         return Repository(
@@ -34,7 +34,7 @@ extension SearchRepositoriesQuery.Data.Search.Edge.Node.AsRepository: Translator
     }
 }
 
-extension SearchRepositoriesQuery.Data.Search.Edge.Node.AsRepository.Owner: Translator {
+extension SearchRepositoriesQuery.Data.Search.Edge.Node.AsRepository.Owner: DirectTranslatorProtocol {
     func toModel() throws -> Owner {
         if let organization = asOrganization {
             return Owner(
