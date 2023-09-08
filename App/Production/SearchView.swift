@@ -3,7 +3,7 @@ import Core
 import Apollo
 
 struct SearchView: View {    
-    @StateObject var viewState: SearchViewState = .init()
+    @StateObject var viewState: SearchViewState = .init(tokenStore: .forProduction)
     
     init() {}
     

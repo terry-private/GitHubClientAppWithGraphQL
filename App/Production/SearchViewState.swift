@@ -1,28 +1,36 @@
 import Foundation
+import Combine
 import Core
 import Apollo
 
 @MainActor
 class SearchViewState: ObservableObject {
     @Published var isShowInputTokenView: Bool = false
-    @Published var inMemoryClient: GraphQLClient
-    @Published var sqliteClient: GraphQLClient
     @Published var inputToken: String
     @Published var repositories: [Repository] = []
     @Published var searchWord: String = "swift"
     @Published var selectedCachePolicy: CachePolicy = .default
     
-    init() {
-        let token = UserDefaults.standard.string(forKey: "token") ?? ""
+    private let tokenStore: TokenStore
+    private var inMemoryClient: GraphQLClient
+    private var sqliteClient: GraphQLClient
+    private var cancellables: Set<AnyCancellable> = []
+    
+    init(tokenStore: TokenStore) {
+        self.tokenStore = tokenStore
+        let token = tokenStore.token ?? ""
         inputToken = token
-        isShowInputTokenView = token == ""
         inMemoryClient = .inMemoryCacheClient(token: token)
         sqliteClient = .sqliteCacheClient(token: token)
+        tokenStore.$token
+            .sink { [weak self] token in
+                self?.isShowInputTokenView = token == nil
+            }
+            .store(in: &cancellables)
     }
     
     func tokenSetButtonTapped() {
-        UserDefaults.standard.set(inputToken, forKey: "token")
-        isShowInputTokenView = false
+        tokenStore.setToken(inputToken)
         inMemoryClient = .inMemoryCacheClient(token: inputToken)
         sqliteClient = .sqliteCacheClient(token: inputToken)
     }
@@ -82,7 +90,6 @@ class SearchViewState: ObservableObject {
     }
     
     func resetTokenButtonTapped() {
-        UserDefaults.standard.set("", forKey: "token")
-        isShowInputTokenView = true
+        tokenStore.refresh()
     }
 }
