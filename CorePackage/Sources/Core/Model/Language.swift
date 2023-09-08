@@ -9,5 +9,5 @@ public struct Language: Identifiable, Equatable {
     }
     public var id: ID
     public var name: String
-    public var hexColor: String
+    public var hexColor: String?
 }

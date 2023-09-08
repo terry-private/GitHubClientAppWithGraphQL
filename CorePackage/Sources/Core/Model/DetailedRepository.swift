@@ -10,11 +10,11 @@ public struct DetailedRepository: Identifiable, Equatable {
     
     public var id: ID
     public var name: String
-    public var description: String
+    public var description: String?
     public var url: String
     public var forkCount: Int
     public var stargazerCount: Int
     public var watchersCount: Int
     public var owner: Owner
-    public var language: Language
+    public var language: Language?
 }
