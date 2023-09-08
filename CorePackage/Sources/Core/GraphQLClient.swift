@@ -46,6 +46,16 @@ public struct GraphQLClient {
         return try await apollo.store.withinReadTransaction(query)
     }
     
+    public func getRepository(name: String, owner: String) async throws -> DetailedRepository {
+        let query = GetRepositoryQuery(name: name, owner: owner)
+        return try await apollo.fetch(query: query, cachePolicy: .fetchIgnoringCacheData)
+    }
+    
+    public func getRepositoryFromCache(name: String, owner: String) async throws -> DetailedRepository {
+        let query = GetRepositoryQuery(name: name, owner: owner)
+        return try await apollo.store.withinReadTransaction(query)
+    }
+    
     public func clearCache() {
         apollo.clearCache()
     }
