@@ -32,6 +32,7 @@ private extension Target.Dependency {
 enum InternalModule: String, CaseIterable {
     case 🏠productionAppFeature = "ProductionAppFeature"
     case 🏠core = "Core"
+    case 🏠detail = "Detail"
     case 🏠search = "Search"
     
     var target: Target {
@@ -52,6 +53,15 @@ enum InternalModule: String, CaseIterable {
                     .🌐gitHubSchema
                 ]
             )
+        case .🏠detail:
+            return target(
+                internalModules: [
+                    .🏠core
+                ],
+                externalModules: [],
+                path: "./Sources/Features/Detail"
+            )
+                
         case .🏠search:
             return target(
                 internalModules: [
