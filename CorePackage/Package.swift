@@ -3,90 +3,80 @@
 
 import PackageDescription
 
-// MARK: - 外部パッケージ
-enum ExternalPackage: CaseIterable {
-    case apollo
-    case gitHubSchema
+// MARK: - 📦外部パッケージ
+enum ExternalPackage: String, CaseIterable {
+    case 📦apollo = "apollo-ios"
+    case 📦gitHubSchema = "GitHubSchema"
     
-    var dependency: Dependency {
+    var dependency: Package.Dependency {
         switch self {
-        case .apollo:
-            return .init(
-                name: "apollo-ios",
-                package: .package(
-                    url: "https://github.com/apollographql/apollo-ios.git",
-                    .upToNextMajor(from: "1.0.0")
-                )
+        case .📦apollo:
+            return .package(
+                url: "https://github.com/apollographql/apollo-ios.git",
+                .upToNextMajor(from: "1.0.0")
             )
-        case .gitHubSchema:
-            return .init(
-                name: "GitHubSchema",
-                package: .package(path: "GitHubSchema")
-            )
+        case .📦gitHubSchema:
+            return .package(path: "GitHubSchema")
         }
     }
-    
-    struct Dependency {
-        var name: String
-        var package: Package.Dependency
-    }
 }
 
-//　MARK: - 外部モジュール
+//　MARK: - 🌐外部モジュール
 private extension Target.Dependency {
-    static let apollo: Target.Dependency = .product(name: "Apollo", .apollo)
-    static let apolloSQLite: Target.Dependency = .product(name: "ApolloSQLite", .apollo)
-    static let gitHubSchema: Target.Dependency = .product(name: "GitHubSchema", .gitHubSchema)
+    static let 🌐apollo: Target.Dependency = .product(name: "Apollo", .📦apollo)
+    static let 🌐apolloSQLite: Target.Dependency = .product(name: "ApolloSQLite", .📦apollo)
+    static let 🌐gitHubSchema: Target.Dependency = .product(name: "GitHubSchema", .📦gitHubSchema)
 }
 
-//　MARK: - 内部モジュール
+//　MARK: - 🏠内部モジュール
 enum InternalModule: String, CaseIterable {
-    case productionAppFeature = "ProductionAppFeature"
-    case core = "Core"
-    case search = "Search"
+    case 🏠productionAppFeature = "ProductionAppFeature"
+    case 🏠core = "Core"
+    case 🏠search = "Search"
     
     var target: Target {
         switch self {
-        case .productionAppFeature:
+        case .🏠productionAppFeature:
             return target(
                 internalModules: [
-                    .search
+                    .🏠search,
                 ],
                 path: "./Sources/AppFeatures/ProductionAppFeature"
             )
-        case .core:
+        case .🏠core:
             return target(
                 internalModules: [],
                 externalModules: [
-                    .apollo,
-                    .apolloSQLite,
-                    .gitHubSchema
+                    .🌐apollo,
+                    .🌐apolloSQLite,
+                    .🌐gitHubSchema
                 ]
             )
-        case .search:
+        case .🏠search:
             return target(
                 internalModules: [
-                    .core
+                    .🏠core
                 ],
                 externalModules: [
-                    .apollo
+                    .🌐apollo
                 ],
                 path: "./Sources/Features/Search"
             )
         }
     }
 }
-    
+
+// MARK: - 🧪テストモジュール
 enum TestModule: String, CaseIterable {
-    case corePackageTests = "CorePackageTests"
+    case 🧪corePackageTests = "CorePackageTests"
     
     var target: Target {
         switch self {
-        case .corePackageTests:
+        case .🧪corePackageTests:
             return testTarget(
                 internalModules: [
-                    .core,
-                    .search
+                    .🏠core,
+                    .🏠search
                 ]
             )
         }
@@ -100,7 +90,7 @@ let package = Package(
         .macOS("13.3")
     ],
     products: InternalModule.allCases.map { .library(name: $0.rawValue, targets: [$0.rawValue])},
-    dependencies: ExternalPackage.allCases.map { $0.dependency.package },
+    dependencies: ExternalPackage.allCases.map { $0.dependency },
     targets: InternalModule.allCases.map { $0.target } + TestModule.allCases.map { $0.target }
 )
 
@@ -172,6 +162,6 @@ private extension TestModule {
 
 private extension Target.Dependency {
     static func product(name: String, _ externalPackage: ExternalPackage) -> Target.Dependency {
-        .product(name: name, package: externalPackage.dependency.name)
+        .product(name: name, package: externalPackage.rawValue)
     }
 }
