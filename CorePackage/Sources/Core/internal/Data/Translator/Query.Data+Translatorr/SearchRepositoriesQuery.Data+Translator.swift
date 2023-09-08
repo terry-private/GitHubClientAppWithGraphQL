@@ -2,11 +2,11 @@ import Foundation
 import GitHubSchema
 
 extension SearchRepositoriesQuery.Data: Translator {
-    func toModel() throws -> [Repository] {
+    func toModel() throws -> [SeachedRepository] {
         guard let edges = self.search.edges else {
             throw TranslateError.null
         }
-        var repositories: [Repository] = []
+        var repositories: [SeachedRepository] = []
         for edge in edges {
             do {
                 guard let repository = try edge?.node?.asRepository?.toModel()  else {
@@ -23,10 +23,10 @@ extension SearchRepositoriesQuery.Data: Translator {
 }
 
 extension SearchRepositoriesQuery.Data.Search.Edge.Node.AsRepository: Translator {
-    func toModel() throws -> Repository {
+    func toModel() throws -> SeachedRepository {
         let owner = try owner.toModel()
-        return Repository(
-            id: Repository.ID(rawValue: id),
+        return SeachedRepository(
+            id: SeachedRepository.ID(rawValue: id),
             name: name,
             stargazerCount: stargazerCount,
             owner: owner

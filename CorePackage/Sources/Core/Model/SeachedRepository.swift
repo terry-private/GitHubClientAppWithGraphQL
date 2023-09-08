@@ -1,6 +1,6 @@
 import Foundation
 
-public struct Repository: Identifiable, Equatable {
+public struct SeachedRepository: Identifiable, Equatable {
     public struct ID: RawRepresentable, Hashable, Codable {
         public var rawValue: String
         public init(rawValue: String) {

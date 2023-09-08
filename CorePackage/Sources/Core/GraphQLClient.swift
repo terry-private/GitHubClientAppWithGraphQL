@@ -36,12 +36,12 @@ public struct GraphQLClient {
         apollo = ApolloClient(networkTransport: transport, store: store)
     }
     
-    public func searchRepositories(word: String, cachePolicy: CachePolicy = .default) async throws -> [Repository] {
+    public func searchRepositories(word: String, cachePolicy: CachePolicy = .default) async throws -> [SeachedRepository] {
         let query = SearchRepositoriesQuery(query: .init(word), after: nil)
         return try await apollo.fetch(query: query, cachePolicy: cachePolicy)
     }
     
-    public func searchRepositoriesFromCache(word: String, afterCursol: String? = nil) async throws -> [Repository] {
+    public func searchRepositoriesFromCache(word: String, afterCursol: String? = nil) async throws -> [SeachedRepository] {
         let query = SearchRepositoriesQuery(query: .init(word), after: .init(afterCursol))
         return try await apollo.store.withinReadTransaction(query)
     }

@@ -7,7 +7,7 @@ import Apollo
 class SearchViewState: ObservableObject {
     @Published var isShowInputTokenView: Bool = false
     @Published var inputToken: String
-    @Published var repositories: [Repository] = []
+    @Published var repositories: [SeachedRepository] = []
     @Published var searchWord: String = "swift"
     @Published var selectedCachePolicy: CachePolicy = .default
     
