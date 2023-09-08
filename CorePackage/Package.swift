@@ -41,19 +41,56 @@ private extension Target.Dependency {
 
 //　MARK: - 内部モジュール
 enum DependencyModule: String, CaseIterable {
+    case productionAppFeature = "ProductionAppFeature"
     case core = "Core"
+    case search = "Search"
     
     var target: Target {
         switch self {
-        case .core:
+        case .productionAppFeature:
             return .target(
                 name: rawValue,
                 dependencyModules: [
+                    .search
                 ],
+                path: "./Sources/AppFeatures/ProductionAppFeature"
+            )
+        case .core:
+            return .target(
+                name: rawValue,
+                dependencyModules: [],
                 dependencies: [
                     .apollo,
                     .apolloSQLite,
                     .gitHubSchema
+                ]
+            )
+        case .search:
+            return .target(
+                name: rawValue,
+                dependencyModules: [
+                    .core
+                ],
+                dependencies: [
+                    .apollo
+                ],
+                path: "./Sources/Features/Search"
+            )
+        }
+    }
+}
+    
+enum TestModule: String, CaseIterable {
+    case corePackageTests = "CorePackageTests"
+    
+    var target: Target {
+        switch self {
+        case .corePackageTests:
+            return .testTarget(
+                name: rawValue,
+                dependencyModules: [
+                    .core,
+                    .search
                 ]
             )
         }
@@ -64,10 +101,11 @@ let package = Package(
     name: "CorePackage",
     platforms: [
         .iOS("16.1"),
+        .macOS("13.3")
     ],
     products: DependencyModule.allCases.map { .library(name: $0.rawValue, targets: [$0.rawValue])},
     dependencies: ExternalPackage.allCases.map { $0.dependency.package },
-    targets: DependencyModule.allCases.map { $0.target }
+    targets: DependencyModule.allCases.map { $0.target } + TestModule.allCases.map { $0.target }
 )
 
 // MARK: - Configure Extensions
@@ -99,6 +137,36 @@ private extension Target {
             sources: sources,
             resources: resources,
             publicHeadersPath: publicHeadersPath,
+            cSettings: cSettings,
+            cxxSettings: cxxSettings,
+            swiftSettings: swiftSettings,
+            linkerSettings: linkerSettings,
+            plugins: plugins
+        )
+    }
+    
+    static func testTarget(
+        name: String,
+        dependencyModules: [DependencyModule] = [], // 標準メソッドに追加
+        dependencies: [Dependency] = [],
+        path: String? = nil,
+        exclude: [String] = [],
+        sources: [String]? = nil,
+        resources: [Resource]? = nil,
+        publicHeadersPath: String? = nil,
+        cSettings: [CSetting]? = nil,
+        cxxSettings: [CXXSetting]? = nil,
+        swiftSettings: [SwiftSetting]? = nil,
+        linkerSettings: [LinkerSetting]? = nil,
+        plugins: [PluginUsage]? = nil
+    ) -> Target {
+        return .testTarget(
+            name: name,
+            dependencies: dependencyModules.map { $0.dependency } + dependencies,
+            path: path,
+            exclude: exclude,
+            sources: sources,
+            resources: resources,
             cSettings: cSettings,
             cxxSettings: cxxSettings,
             swiftSettings: swiftSettings,

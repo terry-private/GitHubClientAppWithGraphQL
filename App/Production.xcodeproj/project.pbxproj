@@ -7,13 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		500CC3F72A94A73C005FC592 /* SearchViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500CC3F62A94A73C005FC592 /* SearchViewState.swift */; };
 		501C6CA42A62370300D88C54 /* ProductionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501C6CA32A62370300D88C54 /* ProductionApp.swift */; };
-		501C6CA62A62370300D88C54 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501C6CA52A62370300D88C54 /* SearchView.swift */; };
 		501C6CA82A62370600D88C54 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 501C6CA72A62370600D88C54 /* Assets.xcassets */; };
 		501C6CAC2A62370600D88C54 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 501C6CAB2A62370600D88C54 /* Preview Assets.xcassets */; };
-		50F157EC2A77ACE400FF6DFC /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 50F157EB2A77ACE400FF6DFC /* Core */; };
-		50F157EE2A77ACE900FF6DFC /* GitHubSchema in Frameworks */ = {isa = PBXBuildFile; productRef = 50F157ED2A77ACE900FF6DFC /* GitHubSchema */; };
+		508205292AAB22970068D2BA /* ProductionAppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 508205282AAB22970068D2BA /* ProductionAppFeature */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,10 +31,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		500CC3F62A94A73C005FC592 /* SearchViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewState.swift; sourceTree = "<group>"; };
 		501C6CA02A62370300D88C54 /* Production.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Production.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		501C6CA32A62370300D88C54 /* ProductionApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductionApp.swift; sourceTree = "<group>"; };
-		501C6CA52A62370300D88C54 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		501C6CA72A62370600D88C54 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		501C6CA92A62370600D88C54 /* Production.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Production.entitlements; sourceTree = "<group>"; };
 		501C6CAB2A62370600D88C54 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -50,8 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				50F157EE2A77ACE900FF6DFC /* GitHubSchema in Frameworks */,
-				50F157EC2A77ACE400FF6DFC /* Core in Frameworks */,
+				508205292AAB22970068D2BA /* ProductionAppFeature in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -95,8 +89,6 @@
 			isa = PBXGroup;
 			children = (
 				501C6CA32A62370300D88C54 /* ProductionApp.swift */,
-				501C6CA52A62370300D88C54 /* SearchView.swift */,
-				500CC3F62A94A73C005FC592 /* SearchViewState.swift */,
 				501C6CA72A62370600D88C54 /* Assets.xcassets */,
 				501C6CA92A62370600D88C54 /* Production.entitlements */,
 				501C6CAA2A62370600D88C54 /* Preview Content */,
@@ -136,8 +128,7 @@
 			);
 			name = Production;
 			packageProductDependencies = (
-				50F157EB2A77ACE400FF6DFC /* Core */,
-				50F157ED2A77ACE900FF6DFC /* GitHubSchema */,
+				508205282AAB22970068D2BA /* ProductionAppFeature */,
 			);
 			productName = GitHubClientAppWithGraphQL;
 			productReference = 501C6CA02A62370300D88C54 /* Production.app */;
@@ -253,9 +244,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				501C6CA62A62370300D88C54 /* SearchView.swift in Sources */,
 				501C6CA42A62370300D88C54 /* ProductionApp.swift in Sources */,
-				500CC3F72A94A73C005FC592 /* SearchViewState.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -618,13 +607,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		50F157EB2A77ACE400FF6DFC /* Core */ = {
+		508205282AAB22970068D2BA /* ProductionAppFeature */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = Core;
-		};
-		50F157ED2A77ACE900FF6DFC /* GitHubSchema */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = GitHubSchema;
+			productName = ProductionAppFeature;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

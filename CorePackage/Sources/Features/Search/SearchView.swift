@@ -2,12 +2,12 @@ import SwiftUI
 import Core
 import Apollo
 
-struct SearchView: View {    
+public struct SearchView: View {
     @StateObject var viewState: SearchViewState = .init(tokenStore: .forProduction)
     
-    init() {}
+    public init() {}
     
-    var body: some View {
+    public var body: some View {
         VStack {
             if viewState.isShowInputTokenView {
                 SecureField("GitHub tokenを入力", text: $viewState.inputToken)
