@@ -6,11 +6,11 @@ public class TokenStore {
     public private(set) var refresh: () -> Void
     public private(set) var setToken: (String) -> Void
     
-    var repository: TokenRepository
+    private var client: TokenClient
     
-    init(repository: TokenRepository) {
-        self.repository = repository
-        token = repository.fetch()
+    init(client: TokenClient) {
+        self.client = client
+        token = client.fetch()
         self.refresh = {}
         self.setToken = { _ in }
     }
@@ -22,15 +22,15 @@ extension TokenStore {
     public static var forProduction: TokenStore = forProduction(.forProduction)
     
     // RepositoryをDIしてテストできる
-    static func forProduction( _ repository: TokenRepository = .forProduction) -> TokenStore {
-        let tokenStore = TokenStore(repository: repository)
+    static func forProduction( _ client: TokenClient = .forProduction) -> TokenStore {
+        let tokenStore = TokenStore(client: client)
         tokenStore.refresh = {
             tokenStore.token = nil
-            tokenStore.repository.remove()
+            tokenStore.client.remove()
         }
         tokenStore.setToken = { newToken in
             tokenStore.token = newToken
-            tokenStore.repository.update(newToken)
+            tokenStore.client.update(newToken)
         }
         return tokenStore
     }
