@@ -40,7 +40,7 @@ private extension Target.Dependency {
 }
 
 //　MARK: - 内部モジュール
-enum DependencyModule: String, CaseIterable {
+enum InternalModule: String, CaseIterable {
     case productionAppFeature = "ProductionAppFeature"
     case core = "Core"
     case search = "Search"
@@ -48,30 +48,27 @@ enum DependencyModule: String, CaseIterable {
     var target: Target {
         switch self {
         case .productionAppFeature:
-            return .target(
-                name: rawValue,
-                dependencyModules: [
+            return target(
+                internalModules: [
                     .search
                 ],
                 path: "./Sources/AppFeatures/ProductionAppFeature"
             )
         case .core:
-            return .target(
-                name: rawValue,
-                dependencyModules: [],
-                dependencies: [
+            return target(
+                internalModules: [],
+                externalModules: [
                     .apollo,
                     .apolloSQLite,
                     .gitHubSchema
                 ]
             )
         case .search:
-            return .target(
-                name: rawValue,
-                dependencyModules: [
+            return target(
+                internalModules: [
                     .core
                 ],
-                dependencies: [
+                externalModules: [
                     .apollo
                 ],
                 path: "./Sources/Features/Search"
@@ -86,9 +83,8 @@ enum TestModule: String, CaseIterable {
     var target: Target {
         switch self {
         case .corePackageTests:
-            return .testTarget(
-                name: rawValue,
-                dependencyModules: [
+            return testTarget(
+                internalModules: [
                     .core,
                     .search
                 ]
@@ -103,21 +99,18 @@ let package = Package(
         .iOS("16.1"),
         .macOS("13.3")
     ],
-    products: DependencyModule.allCases.map { .library(name: $0.rawValue, targets: [$0.rawValue])},
+    products: InternalModule.allCases.map { .library(name: $0.rawValue, targets: [$0.rawValue])},
     dependencies: ExternalPackage.allCases.map { $0.dependency.package },
-    targets: DependencyModule.allCases.map { $0.target } + TestModule.allCases.map { $0.target }
+    targets: InternalModule.allCases.map { $0.target } + TestModule.allCases.map { $0.target }
 )
 
 // MARK: - Configure Extensions
-private extension DependencyModule {
+private extension InternalModule {
     var dependency: Target.Dependency { .byName(name: self.rawValue) }
-}
-
-private extension Target {
-    static func target(
-        name: String,
-        dependencyModules: [DependencyModule] = [], // 標準メソッドに追加
-        dependencies: [Dependency] = [],
+    
+    func target(
+        internalModules: [InternalModule] = [], // 標準メソッドに追加
+        externalModules: [Target.Dependency] = [],
         path: String? = nil,
         exclude: [String] = [],
         sources: [String]? = nil,
@@ -127,11 +120,11 @@ private extension Target {
         cxxSettings: [CXXSetting]? = nil,
         swiftSettings: [SwiftSetting]? = nil,
         linkerSettings: [LinkerSetting]? = nil,
-        plugins: [PluginUsage]? = nil
+        plugins: [Target.PluginUsage]? = nil
     ) -> Target {
         return Target.target(
-            name: name,
-            dependencies: dependencyModules.map { $0.dependency } + dependencies,
+            name: rawValue,
+            dependencies: internalModules.map { $0.dependency } + externalModules,
             path: path,
             exclude: exclude,
             sources: sources,
@@ -144,11 +137,12 @@ private extension Target {
             plugins: plugins
         )
     }
-    
-    static func testTarget(
-        name: String,
-        dependencyModules: [DependencyModule] = [], // 標準メソッドに追加
-        dependencies: [Dependency] = [],
+}
+
+private extension TestModule {
+    func testTarget(
+        internalModules: [InternalModule] = [], // 標準メソッドに追加
+        externalModules: [Target.Dependency] = [],
         path: String? = nil,
         exclude: [String] = [],
         sources: [String]? = nil,
@@ -158,11 +152,11 @@ private extension Target {
         cxxSettings: [CXXSetting]? = nil,
         swiftSettings: [SwiftSetting]? = nil,
         linkerSettings: [LinkerSetting]? = nil,
-        plugins: [PluginUsage]? = nil
+        plugins: [Target.PluginUsage]? = nil
     ) -> Target {
         return .testTarget(
-            name: name,
-            dependencies: dependencyModules.map { $0.dependency } + dependencies,
+            name: rawValue,
+            dependencies: internalModules.map { $0.dependency } + externalModules,
             path: path,
             exclude: exclude,
             sources: sources,
@@ -177,7 +171,7 @@ private extension Target {
 }
 
 private extension Target.Dependency {
-    static func product(name: String, _ externalPackage: ExternalPackage) -> PackageDescription.Target.Dependency {
+    static func product(name: String, _ externalPackage: ExternalPackage) -> Target.Dependency {
         .product(name: name, package: externalPackage.dependency.name)
     }
 }
